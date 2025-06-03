@@ -1,0 +1,181 @@
+@use './darcula.scss';
+@use './menu.scss';
+@use './content.scss';
+@use './fixes.scss';
+@use './prosemirror-gapcursor.scss';
+@use './views.scss';
+@use './colors.scss';
+@use './katex.scss';
+@use './draghandle.scss';
+
+body {
+  background-color: var(--background);
+  font-family: sans-serif;
+  caret-color: black;
+}
+
+a {
+  text-decoration: underline;
+  color: var(--accent-text);
+  text-decoration-skip-ink: auto;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 3px;
+}
+
+.ProseMirror {
+  outline: none;
+  font-family: sans-serif;
+
+  .tableWrapper {
+    overflow-x: auto;
+  }
+  .ProseMirror table {
+    border-collapse: collapse;
+    table-layout: fixed;
+    width: 100%;
+    overflow: hidden;
+  }
+  td,
+  th {
+    vertical-align: top;
+    box-sizing: border-box;
+    position: relative;
+  }
+  .column-resize-handle {
+    position: absolute;
+    right: -2px;
+    top: 0;
+    bottom: 0;
+    width: 4px;
+    z-index: 20;
+    background-color: #adf;
+    pointer-events: none;
+  }
+  &.resize-cursor {
+    cursor: ew-resize;
+    cursor: col-resize;
+  }
+    /* Give selected cells a blue overlay */
+  .selectedCell:after {
+    z-index: 2;
+    position: absolute;
+    content: '';
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    background: rgba(200, 200, 255, 0.4);
+    pointer-events: none;
+  }
+
+}
+
+.cm-scroller {
+  height: auto !important;
+  width: auto !important;
+  overflow-y: visible;
+  &:has(.cm-html-editor-inactive) {
+    height: 0px !important;
+  }
+}
+.cm-content {
+  display: inline !important;
+  overflow-y: visible;
+  padding: 0 !important;
+}
+.cm-editor.cm-focused {
+  outline: none;
+  position: relative;
+  top: -1px;
+  margin-bottom: 1px;
+}
+.cm-html-renderer {
+  display: inline-block;
+  position: relative;
+  top: -2px;
+}
+.cm-html-renderer-inactive {
+  height: 0;
+  overflow: hidden;
+}
+.cm-html-editor-inactive {
+  width: 1px !important;
+  height: 1px !important;
+  overflow: hidden;
+  position: relative;
+  opacity: 0 !important;
+  top: 16px !important;
+  display: inline-block !important;
+}
+.cm-editor {
+  display: inline-block !important;
+  overflow-y: visible;
+  vertical-align: middle;
+}
+.suggestions {
+  display: block;
+  position: absolute;
+  top: 0;
+  left: 0;
+  min-width: 300px;
+  background-color: white;
+  min-height: 600px;
+  .selected {
+    background-color: yellow;
+  }
+}
+
+.ProseMirror {
+  position: relative;
+}
+
+.ProseMirror {
+  word-wrap: break-word;
+  white-space: pre-wrap;
+  white-space: break-spaces;
+  -webkit-font-variant-ligatures: none;
+  font-variant-ligatures: none;
+  font-feature-settings: "liga" 0; /* the above doesn't seem to work in Edge */
+}
+
+.ProseMirror pre {
+  white-space: pre-wrap;
+}
+
+.ProseMirror li {
+  position: relative;
+}
+
+.ProseMirror-hideselection *::selection { background: transparent; }
+.ProseMirror-hideselection *::-moz-selection { background: transparent; }
+.ProseMirror-hideselection { caret-color: transparent; }
+
+/* See https://github.com/ProseMirror/prosemirror/issues/1421#issuecomment-1759320191 */
+.ProseMirror [draggable][contenteditable=false] { user-select: text }
+
+.ProseMirror-selectednode {
+  outline: 2px solid #8cf;
+}
+
+/* Make sure li selections wrap around markers */
+
+li.ProseMirror-selectednode {
+  outline: none;
+}
+
+li.ProseMirror-selectednode:after {
+  content: "";
+  position: absolute;
+  left: -32px;
+  right: -2px; top: -2px; bottom: -2px;
+  border: 2px solid #8cf;
+  pointer-events: none;
+}
+
+/* Protect against generic img rules */
+
+img.ProseMirror-separator {
+  display: inline !important;
+  border: none !important;
+  margin: 0 !important;
+}
