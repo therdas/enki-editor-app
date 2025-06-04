@@ -1,5 +1,5 @@
 import { toggleMark } from "prosemirror-commands";
-import { type Command, EditorState, Transaction } from "prosemirror-state";
+import { EditorState, Transaction } from "prosemirror-state";
 import { EditorView } from "prosemirror-view";
 import { findContainerParent } from "./utils";
 
@@ -30,7 +30,7 @@ export class URLSelector {
         this.items.clear;
     }
 
-    public static openConvertDialog(state: EditorState, dispatch?: (tr: Transaction) => void, view?: EditorView): boolean {
+    public static openConvertDialog(state: EditorState, _?: (tr: Transaction) => void, view?: EditorView): boolean {
         URLSelector.focus = -1;
 
         let opts: HTMLOptionElement[] = [];
@@ -162,7 +162,7 @@ export class URLSelector {
                 if (url == undefined)
                     url = searchField.value;
 
-                let cmd: Command = toggleMark(state.schema.marks['link'], { href: url });
+                toggleMark(state.schema.marks['link'], { href: url });
 
                 destroy();
             }

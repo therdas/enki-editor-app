@@ -67,7 +67,7 @@ nav {
             }
 
             &:hover > span.button {
-                opacity: 1 !important;
+                display: block;
             }
 
             span {
@@ -75,8 +75,9 @@ nav {
                 &.emoji {
                     height: 24px;
                     width: 24px;
+                    min-width: 24px;
                     text-align: center;
-                    flex-grow: 0;
+                    display: block !important;
                 }
 
                 &.emoji.material-icon {
@@ -86,6 +87,12 @@ nav {
                 &.name {
                     display: block;
                     flex-grow: 1;
+                    text-overflow: ellipsis;
+                    max-height: 1em;
+                    max-width: 100%;
+                    min-width: 0;
+                    white-space: nowrap;
+                    overflow: hidden;
                 }
 
                 &.button.hider {
@@ -93,11 +100,11 @@ nav {
                     padding: 0.4em 0;
                     text-align: center;
                     opacity: 0.6;
+                    display: block !important;
                 }
 
                 &.button{
-                    display: block;
-                    opacity: 0;
+                    display: none;
                     height: 100%;
                     padding: 0.4em;
                     &:hover{ 
@@ -160,8 +167,10 @@ nav {
     
     background-color: var(--container-background);
     height: 4em;
+    z-index: 4;
 
-    span.material-icon {
+    .material-icon {
+        text-decoration: none;
         font-size: 1.4em;
         color: var(--popup-border);
         height: 100%;
@@ -394,6 +403,114 @@ nav {
     right: 0;
     bottom: 0;
     background-color: transparent;
-    z-index: 1;
+    z-index: 5;
+
+    &.show {
+        display: block;
+    }
+
+    &.hide {
+        display: none;
+    }
 }
 
+.delete-dialog {
+    position: absolute;
+    background-color: var(--popup-background);
+    border:2px solid var(--popup-border);
+    box-shadow: 2px 2px 0 var(--popup-border);
+    display: flex;
+    z-index: 11;
+    margin-top: 5.5em;
+    margin-left: -2px;
+    
+    span {
+        display: block;
+        padding: 0.7em;
+    }
+
+    button {
+        display: block;
+        padding: 0.7em 0.5em;
+        font: inherit;
+        background-color: var(--popup-darker-background);
+        margin: 0;
+        border: unset;
+        outline: unset;
+
+        &:nth-child(2) {
+            border-left: 2px solid var(--popup-border);
+            border-right: 2px solid var(--popup-border);
+        }
+
+        &.destructive {
+            background-color: rgb(255, 190, 200);
+
+            &:hover {
+            background-color: rgb(255, 62, 87);
+            color: white;
+
+            }
+        }
+
+        &:hover {
+            background-color: var(--accent);
+        }
+    }
+
+    &.show {
+        display: flex;
+    }
+
+    &.hide {
+        display: none;
+    }
+
+}
+
+.menu-slider {
+    display: flex;
+    flex-direction: column;
+    position: absolute;
+    background-color: var(--container-background);
+    bottom: 7em;
+    z-index: 1;
+    transition: all 0.1s ease-in-out;
+
+    margin-top: -3px;
+    margin-left: -3px;
+
+    width: calc(20vw - 4em);
+    min-width: calc(20rem - 4em);
+    border: 2px solid var(--popup-border);
+    box-shadow: 3px 3px 0 var(--popup-border);
+    overflow: hidden;
+    cursor: pointer;
+
+    a {
+        text-decoration: none;
+        padding: 0.7em 0.75em;
+        display: block;
+        width: 100%;
+
+        &:hover {
+            background-color: var(--accent);
+        }
+    }
+
+    a.disabled {
+        opacity: 0.5;
+        text-decoration: line-through;
+        pointer-events: none;
+    }
+
+    &.hide {
+        margin-top: 0px;
+        margin-left: 0px;
+        opacity: 0;
+        border: 2px solid transparent;
+        box-shadow: none;
+        background-color: transparent;
+        pointer-events: none;
+    }
+}

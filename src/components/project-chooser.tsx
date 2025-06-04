@@ -1,5 +1,5 @@
 import { addProject, setProject, setProjects, type Projects } from "@/lib/store/pageTree";
-import React, { useEffect, useRef, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { EmojiPicker } from "./emoji-picker";
 import type { Emoji } from "frimousse";
 import { useAppDispatch } from "@/lib/store";

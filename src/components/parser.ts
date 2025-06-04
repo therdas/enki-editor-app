@@ -21,7 +21,7 @@ export async function getTagsAndTodos(text: string) {
     const tags = new Set<string>();    //format: tag[]
     const todos: [string, boolean, number][] = [];   //format: [todo, isChecked, line]
 
-    visit(file, isInlineTaggableNode, (node) => tags.add(node.value))
+    visit(file, isInlineTaggableNode, (node) => {tags.add(node.value)})
 
     visit(file, 'listItem', (node: ListItem) => {
         if(node.checked !== null)

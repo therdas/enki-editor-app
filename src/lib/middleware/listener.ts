@@ -1,15 +1,15 @@
 import { createListenerMiddleware } from '@reduxjs/toolkit'
 
-import { WithIDBStorage } from '@/features/data-provider-localstore/idb-provider';
+import { WithIDBStorage } from '@/lib/database/idb-provider';
 import type { RootState } from '../store';
 import { type PageDataNode } from '../store/page';
-import { removePath, removeProject } from '../store/pageTree';
+import { removePath } from '../store/pageTree';
 
 export const listenerMiddleware = createListenerMiddleware();
 
 listenerMiddleware.startListening({
 
-    predicate: (action, currentState, previousState) => {
+    predicate: (action) => {
         if (
             
             action.type.startsWith('dir/add')           || 
@@ -26,6 +26,7 @@ listenerMiddleware.startListening({
     },
     effect: async (action, listenerAPI) => {
         let newState = listenerAPI.getState() as RootState;
+
         (await WithIDBStorage()).setProjects(newState.dir.projects);
 
         if (action.type == 'dir/addPath') {
@@ -44,17 +45,13 @@ listenerMiddleware.startListening({
 
                 let page = node.children[node.children.length -1 ];
 
-                const res = (await WithIDBStorage()).setPage(page.pageHash, {
+                (await WithIDBStorage()).setPage(page.pageHash, {
                     created: (new Date()).toLocaleString(),
                     modified: (new Date()).toLocaleString(),
                     author: '',
                     text: payload.page.text,
                 });
             }
-
-            // Add to our lil cache
-            
-
         }
     }
 })
@@ -82,7 +79,6 @@ listenerMiddleware.startListening({
         }
 
         let stack = [];
-        let pathstack = [];
         stack.push(...node.children);
         while(stack.length !== 0) {
             let n = stack.pop();

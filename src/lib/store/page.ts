@@ -1,6 +1,5 @@
-import { WithIDBStorage } from "@/features/data-provider-localstore/idb-provider";
-import { Path } from "@/features/data-provider/path";
-import { type Action, createAsyncThunk, createSlice, type PayloadAction } from "@reduxjs/toolkit";
+import { WithIDBStorage } from "@/lib/database/idb-provider";
+import { createAsyncThunk, createSlice, type PayloadAction } from "@reduxjs/toolkit";
 import type { RootState } from "../store";
 
 export interface PageDataNode {
@@ -21,14 +20,14 @@ const initialState = {
         path: "placeholder:placeholder",
     } as PageDataNode,
     error: '' as string,
-    status: 'stale' as 'stale' | 'loaded' | 'pending'  | 'failed'
+    status: 'pending' as 'stale' | 'loaded' | 'pending'  | 'failed'
 }
 
 export const savePage = createAsyncThunk(
     'page/savePage',
     async (hash:string, api) => {
         let page = (api.getState() as RootState).page.page;
-        const response = await (await WithIDBStorage()).setPage(hash, page);
+        await (await WithIDBStorage()).setPage(hash, page);
 
         //Add additional sidelogic
     }
@@ -56,10 +55,16 @@ export const PageSlice = createSlice({
     },
     extraReducers: builder => {
         builder
-            .addCase(populatePage.pending, (state, action) => {
+            .addCase(populatePage.pending, (state, _) => {
                 state.status = 'pending';
             })
             .addCase(populatePage.fulfilled, (state, action) => {
+                if(action.payload == undefined) {
+                    console.log("Fetched", action.payload);
+                    state.status = 'failed';
+                    state.error = 'no such page';
+                    return;
+                }
                 state.page = action.payload;
                 state.status = 'loaded';
             })

@@ -1,11 +1,11 @@
 import { NavItem } from "@/components/nav-item";
 import ProjectChooser from "@/components/project-chooser";
-import { WithIDBStorage } from "@/features/data-provider-localstore/idb-provider";
 import { useAppDispatch } from "@/lib/store";
-import { addPath, getCurrentProject, getDirStatus, getDirTree, getTags, PageType, populateProjects, reparentPath, type DirState, type Projects, type TreeState } from "@/lib/store/pageTree";
-import { useEffect, useRef } from "react";
+import { addPath, getCurrentProject, getDirStatus, getDirTree, getTags, PageType, populateProjects, reparentPath } from "@/lib/store/pageTree";
+import { useEffect, useRef, useState } from "react";
 import { useSelector } from "react-redux";
 import ReactDragListView from "react-drag-listview";
+import { Link } from "react-router";
 
 export function Navigation() {
     const dispatch = useAppDispatch()
@@ -13,6 +13,7 @@ export function Navigation() {
     const dirTreeStatus = useSelector(getDirStatus);
     const currentProject = useSelector(getCurrentProject);
     const linksContainerElement = useRef<HTMLDivElement>(null);
+    const [showMenu, setMenu] = useState(false);
 
     useEffect(() => {
         if(dirTreeStatus == 'idle') {
@@ -33,6 +34,7 @@ export function Navigation() {
                 children: [],
                 pageHash: 'generate',
                 collapsed: false,
+                favourite: false,
             },
             new: true
         }));
@@ -51,8 +53,6 @@ export function Navigation() {
         nodeSelector: 'a',
         handleSelector: 'a'
     }
-
-    let index = 0;
 
     if(dirTreeStatus == "pending") {
         return <h1> Loading... </h1>
@@ -81,11 +81,18 @@ export function Navigation() {
                     }
                 </div>
 
+                
+
                 <div id="setup-panel">
-                    <span className="material-icon">home</span>
-                    <span className="material-icon">attach_file</span>
-                    <span className="material-icon">favorite</span>
-                    <span className="material-icon">menu</span>
+                    <Link className="material-icon" to="/home/">home</Link>
+                    <Link className="material-icon" to="/search/">search</Link>
+                    <Link className="material-icon" to="/favourites/">favorite</Link>
+                    <span className="material-icon" onClick={() => setMenu(!showMenu)}>menu</span>
+                </div>
+
+                <div className={(showMenu ? "" : "hide ") + "menu-slider"}>
+                    <Link to="/about/"> About </Link>
+                    <Link to="/export/" className="disabled"> Export (Coming soon...)</Link>
                 </div>
             </nav>
         )

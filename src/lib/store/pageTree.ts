@@ -1,9 +1,6 @@
-import { WithIDBStorage } from "@/features/data-provider-localstore/idb-provider";
-import { createAsyncThunk, createSlice, current, type PayloadAction } from "@reduxjs/toolkit"
-import { Children } from "react";
-import { visit } from "unist-util-visit";
+import { WithIDBStorage } from "@/lib/database/idb-provider";
+import { createAsyncThunk, createSlice, type PayloadAction } from "@reduxjs/toolkit"
 import { getUUID } from "../unique-id";
-import { data } from "react-router";
 
 export type Projects = PageNode[]
 
@@ -27,6 +24,7 @@ export interface PageNode {
     icon: string,
     name: string,
     type: PageType,
+    favourite: boolean,
     children: PageNode[],
     pageHash: string,
     collapsed: boolean,
@@ -68,6 +66,7 @@ export const TreeSlice = createSlice({
     name: 'dir',
     initialState: initialState,
     reducers: {
+        //@ts-ignore State is used by IWB to create the slice state.
         setTree: (state, action: PayloadAction<TreeState>) => {
             state = action.payload;
         },
@@ -135,6 +134,7 @@ export const TreeSlice = createSlice({
                         children: [],
                         pageHash: getUUID(),
                         collapsed: false,
+                        favourite: false,
                     })
                 }
             }
@@ -151,6 +151,7 @@ export const TreeSlice = createSlice({
                     children: [],
                     pageHash: getUUID(),
                     collapsed: false,
+                    favourite: false,
                 })
             }
         },
@@ -176,12 +177,12 @@ export const TreeSlice = createSlice({
             if(index !== -1)
                 currentNode.children = [...currentNode.children.slice(0, index), ...currentNode.children.slice(index + 1)];
         },
-        modifyPath(state, action: PayloadAction<[string, [string, string]]>) {
+        modifyPath(state, action: PayloadAction<[string, [string, string, boolean]]>) {
             if(state.currentProject == null)
                 return;
 
             let [hash, newData] = action.payload;
-            let [newIcon, newName] = newData;
+            let [newIcon, newName, favourite] = newData;
 
             // Find old node:
             let root = state.projects[state.currentProject];
@@ -192,6 +193,7 @@ export const TreeSlice = createSlice({
             // We now have the node, modify it.
             node.name = newName;
             node.icon = newIcon;
+            node.favourite = favourite;
         },
         reparentPath: (state, action: PayloadAction<{from: string, to: string, direction: 'up' | 'down'}>) => {
 
@@ -267,6 +269,7 @@ export const TreeSlice = createSlice({
                     children: [],
                     pageHash: getUUID(),
                     collapsed: false,
+                    favourite: false,
                 })
             }
 
@@ -287,7 +290,7 @@ export const TreeSlice = createSlice({
     },
     extraReducers: builder => {
         builder
-            .addCase(populateProjects.pending, (state, action) => {
+            .addCase(populateProjects.pending, (state, _) => {
                 state.status = 'pending';
             })
             .addCase(populateProjects.fulfilled, (state, action) => {
@@ -331,27 +334,6 @@ export function queryDirTree(dirTree: PageNode, hash: string) {
     }
 
     return undefined;
-}
-
-function findNodeByIndexBuilder(node: PageNode, index: number): [PageNode, PageNode | undefined] | undefined {
-    let at = index;
-
-    function findNodeByIndex(node: PageNode, parent: PageNode | undefined, index: number): [PageNode, PageNode | undefined] | undefined {
-        // Visit node
-        if(at == 0) {
-            return [node, parent];
-        } 
-
-        // Visit Children
-        for(let child of node.children) {
-            const res = findNodeByIndex(child, node, --at);
-            if(res !== undefined) return res;
-        }
-
-        return undefined;
-    };
-
-    return findNodeByIndex(node, undefined, index);
 }
 
 function pathIsChildOf(pathA: string[], pathB: string[]) {

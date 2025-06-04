@@ -16,8 +16,7 @@ class PrompterWidgetView {
         this.update(view, null);
     }
 
-    update(view: EditorView, lastState: EditorState | null) {
-        let state = view.state
+    update(view: EditorView, _: EditorState | null) {
 
         let selection = view.state.selection.$anchor;
         let node = selection.node(selection.depth);
@@ -29,7 +28,6 @@ class PrompterWidgetView {
         }
 
         let pos = view.coordsAtPos(selection.pos - selection.parentOffset);
-        let box = this.tooltip.offsetParent?.getBoundingClientRect();
 
         this.tooltip.style.left = pos.left + 'px';
         this.tooltip.style.top = pos.top + 'px';

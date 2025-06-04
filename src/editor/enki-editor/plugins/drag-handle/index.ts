@@ -33,12 +33,12 @@ export const DragHandle = new Plugin({
         dragger.ondragstart = e => dragStart(view, e);
         dragger.ondragend = _ => dragEnd();
 
-        let inserter: HTMLDivElement = document.createElement('div');
-        document.body.appendChild(inserter);
-        inserter.textContent = '+';
-        inserter.id = 'inserter';
-        inserter.draggable = false;
-        inserter.onclick = e => insertType(view, e);
+        // let inserter: HTMLDivElement = document.createElement('div');
+        // document.body.appendChild(inserter);
+        // inserter.textContent = '+';
+        // inserter.id = 'inserter';
+        // inserter.draggable = false;
+        // inserter.onclick = e => insertType(view, e);
 
         return {
             update() {
@@ -46,7 +46,7 @@ export const DragHandle = new Plugin({
             },
             destroy() {
                 if(dragger.parentElement) dragger.parentElement.removeChild(dragger)
-                if(inserter.parentElement) inserter.parentElement.removeChild(inserter)
+                // if(inserter.parentElement) inserter.parentElement.removeChild(inserter)
             }
         }
     },
@@ -77,10 +77,6 @@ export const DragHandle = new Plugin({
         }
     }
 })
-
-function insertType(_: EditorView, __: MouseEvent) {
-
-}
 
 function dragEnd() {
     let elem = document.getElementById('temp-draggable');

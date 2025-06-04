@@ -6,7 +6,7 @@ import { getCurrentProject, getDirTree, modifyPath, queryDirTree } from "@/lib/s
 import type { Emoji } from "frimousse"
 import React, { useEffect, useRef, useState } from "react"
 import { useSelector } from "react-redux"
-import { useLoaderData, useNavigate, type LoaderFunctionArgs } from "react-router"
+import { Link, useLoaderData, type LoaderFunctionArgs } from "react-router"
 
 export function PageLoader(args: LoaderFunctionArgs) {
     if('*' in args.params){
@@ -20,37 +20,49 @@ export default function EditorPage() {
     const dispatch = useAppDispatch();
     const page = useSelector(getPage);
     const status = useSelector(getPageStatus);
-    const navigate = useNavigate();
 
     const dir = useSelector(getDirTree);
     const projectIdx = useSelector(getCurrentProject);
-
-    const thisPage = queryDirTree(dir[projectIdx!], hash);
+    const thisPage = queryDirTree(dir[projectIdx ?? 0], hash);
 
     const pageName = useRef<HTMLInputElement>(null);
     const errorName = useRef<HTMLDivElement>(null);
     const [showEmoji, setEmoji] = useState(false);
 
+    let children = thisPage?.children.map( 
+    node => <Link to={`/page/${node.pageHash}`}>
+        <span className={node.icon == "empty" ? "material-icon" : ""}>
+            {node.icon == "empty" ? "docs" : node.icon}
+        </span>
+        <span>
+            {node.name}
+        </span>
+    </Link>) ?? false;
+
     useEffect(() => {
-        // dispatch(setPagePath(path));
-        // No point in checking page state, we always need to fix it
         dispatch(populatePage(hash));
         return () => {}
     }, [hash]);
-
 
     const changeTitle: React.KeyboardEventHandler= (e) => {
         if(e.key == 'Enter' && pageName.current) {
             let newName = pageName.current.value;
             if(errorName.current) errorName.current.classList.remove('show');
-            dispatch(modifyPath([hash, [thisPage?.icon ?? "📄", newName]]));
+            dispatch(modifyPath([hash, [thisPage?.icon ?? "📄", newName, thisPage?.favourite ?? false]]));
         }
     }  
 
-    function updateEmojis(emoji: Emoji) {
+    const updateEmojis = (emoji: Emoji) => {
         if(!thisPage) return;
-        dispatch(modifyPath([hash, [emoji.emoji, thisPage.name]]))
+        dispatch(modifyPath([hash, [emoji.emoji, thisPage.name, thisPage?.favourite ?? false]]))
     }
+
+    if(projectIdx == null) {
+        return <>
+            <h1> Please select a project first!</h1>
+        </>
+    }
+
 
     if(status == 'pending' ) {
         return <>
@@ -71,6 +83,7 @@ export default function EditorPage() {
                     <div className="error" ref={errorName}></div>
                 </div>
                 <Editor page={page} hash={hash}/>
+                {children}
             </div>
         </>
     } else {
