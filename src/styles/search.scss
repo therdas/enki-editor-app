@@ -1,0 +1,69 @@
+@use "./editor/colors";
+
+#search-page {
+    display: block;
+    padding: 2em;
+    flex-grow: 1;
+
+    & > div:first-child {
+        display: flex;
+        flex-direction: row;
+        margin-bottom: 1rem;
+
+        span.material-icon {
+            display: inline-block;
+            font-size: 48px;
+            color: var(--popup-border);
+        }
+
+        input {
+            flex-grow: 1;
+            outline: none;
+            border:none;
+            font-size: 2em;
+            margin: 0 1rem;
+            border-bottom: 2px solid transparent;
+            transition: all 0.07s ease-in-out;
+
+            &:hover {
+                border-bottom: 2px solid var(--popup-border);
+            }
+        }
+    }
+
+    & > #results {
+        div {
+            display: flex;
+            align-items: center;
+            vertical-align: middle;
+            padding: 0.5em;
+                border: 2px solid transparent;
+                user-select: none;
+                cursor: pointer;
+                transition: all 0.05s ease-in-out;
+
+            span:first-child {
+                display: inline-block;
+                height: 36px;
+                width: 36px;
+                text-align: center;
+                font-size: 24px;
+                margin-right: 0.3rem;
+
+                &.material-icon {
+                    padding-top: 3px
+                }
+            }
+
+            span:nth-child(2) {
+                display: inline-block;
+                
+            }
+
+            &:hover {
+                border: 2px solid var(--popup-border);
+                background-color: var(--accent);
+            }
+        }
+    }
+}

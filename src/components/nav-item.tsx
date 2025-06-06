@@ -79,9 +79,6 @@ export function NavItem( { tree, pathToParent, indent }:{ tree: PageNode, pathTo
                 childrenArray.length!== 0  && 
                 <Link 
                     to={`/page/${tree.pageHash}`} 
-                    style={{
-                        marginLeft: `${indent*20}px`
-                    }}
                     className="nav-drop-ahead" 
                     key={tree.pageHash + '-drop-target'}
                     data-path={path}

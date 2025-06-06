@@ -1,6 +1,6 @@
 import { useAppDispatch, useAppSelector } from "@/lib/store";
 import { getCurrentProject, getDirStatus, getDirTree, populateProjects, type PageNode } from "@/lib/store/pageTree";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo } from "react";
 import { Link } from "react-router";
 
 export default function FavouritePage () {

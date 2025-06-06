@@ -26,12 +26,14 @@ export default function SearchPage() {
 
 
     const buildIndex = async () => {
-        console.log("Rebuilding IDX");
         if(
-            dirTree == null || 
-            currentProject == null
+            dirTree == null
         ) {
             dispatch(populateProjects());
+            return;
+        }
+
+        if(currentProject == null) {
             return;
         }
 
@@ -51,6 +53,8 @@ export default function SearchPage() {
             let meta = queryDirTree(proj, key);
             if(meta == undefined) continue;
 
+            console.log(val.text);
+
             indexData.push({
                 hash: key,
                 name: meta.name,
@@ -64,7 +68,9 @@ export default function SearchPage() {
 
             this.field('text');
 
-            this.field('name')
+            this.field('name');
+
+            this.pipeline.remove(lunr.stopWordFilter);
 
             for(const doc of indexData)
                 this.add(doc);
@@ -73,9 +79,9 @@ export default function SearchPage() {
         (await WithIDBStorage()).setKey('search_index', {
             index: JSON.stringify(idx),
             modified: new Date().toLocaleString(),
-        });
+        }).then(() => setIndex(idx));
 
-        setIndex(idx);
+        console.log("built index", idx);
     }
 
     useEffect(() => {
@@ -85,21 +91,27 @@ export default function SearchPage() {
             // One, get the index from IDBStorage. Then get the latest
             // document from storage (n=1) and compare the modified timestamps.
             // If the timestamps are different we'll recompute our index.
-            let index = await db.getKey('search_index') as Index;
-            if(index == undefined) {
+            let oldidx = await db.getKey('search_index') as Index;
+
+            if(index == undefined && oldidx == undefined) {
                 buildIndex();
-            } else {
+            } else if(index == undefined && oldidx !== undefined ){
+                setIndex(lunr.Index.load(JSON.parse(oldidx.index)))
+            } else if(index !== undefined && oldidx == undefined) {
+            } else if(index !== undefined && oldidx !== undefined) {
+                console.log("pls");
+
                 let lastModifiedPage = (await db.getLastNPages(1))?.[0][1] ?? undefined;
                 
                 if(lastModifiedPage == undefined) return;
 
-                let indexDate = new Date(index.modified);
+                let indexDate = new Date(oldidx.modified);
                 let modifiedDate = new Date(lastModifiedPage.modified);
 
                 if(indexDate < modifiedDate) 
                     buildIndex(); 
                 else
-                    setIndex(lunr.Index.load(JSON.parse(index.index)));
+                    setIndex(lunr.Index.load(JSON.parse(oldidx.index)));
                 // If the index exists and is AOK or the index is current, 
                 // we simply set our internal index to it.
             }
@@ -107,11 +119,15 @@ export default function SearchPage() {
 
     }, [dirTreeStatus]);
 
+    
+
     const results = useMemo(() => {
+
         if(index) {
-            return index.search(searchField) 
+            return index.search(searchField+'*') 
         } else return undefined;
     }, [searchField, index]);
+
 
     let elem = results?.map( e => {
         if(dirTree == undefined || currentProject == undefined) return false;
@@ -130,11 +146,20 @@ export default function SearchPage() {
     }
 
     return <>
-        <section id="tags-page">
-            <div><span className="material-icon">search</span><input type="search" onChange={handleChange}/></div>
+        {currentProject !== null && <section id="search-page">
+            <div>
+                <span className="material-icon">search</span>
+                <input type="search" onChange={handleChange} placeholder="What do you want to search for?"/>
+                </div>
             <div id="results">
                 {elem}
             </div>
-        </section>
+        </section>}
+        {currentProject == null && <section  id="search-page">
+            <div>
+                <span className="material-icon">error</span>
+                <input type="search" disabled placeholder="You need to choose a project first..."></input>
+            </div>
+        </section>}
     </>
 }
