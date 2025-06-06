@@ -1,54 +1,32 @@
-# React + TypeScript + Vite
+# Enki Editor
+An example app build on top of Enki Editor and React/Redux to show how well Prosemirror, react and Indexeddb worked together!
+For more information on the editor itself, see [Enki Editor](https://github.com/therdas/enki-editor), which will be converted into a library soon!
+Give it a whirl! [enki](therdas.dev/projects/enki)
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## Building
+Run the following commands:
+- `git clone https://github.com/therdas/enki-editor.git`
+- `npm i`
+- `npm run dev`
 
-Currently, two official plugins are available:
+To export a production build, run:
+- `npm run dev`
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## Developing
+The HMR Dev server from Vite should reflect all changes instantaneously without state being lost. Keep in mind that the entire project is fully, _completely_ typed, so any type errors will cause errors.
 
-## Expanding the ESLint configuration
+## Security
+The project itself is not vulnerable to XSS attacks. However, since pasting _can_ introduce links, we recommend either using a sanitization library and linking it to any paste events, or exercising caution while using this project
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+## Is this editor ready? Can I deploy it in production? Can I replace my Notion/Evernote/Obsidian with it?
+No, it is in beta; No, we do not recommend it; and maybe - I really appreciate your support, but as this was an exploratory project with a lot of rough edges, I do not recommend solely relying on it.
 
-```js
-export default tseslint.config({
-  extends: [
-    // Remove ...tseslint.configs.recommended and replace with this
-    ...tseslint.configs.recommendedTypeChecked,
-    // Alternatively, use this for stricter rules
-    ...tseslint.configs.strictTypeChecked,
-    // Optionally, add this for stylistic rules
-    ...tseslint.configs.stylisticTypeChecked,
-  ],
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
-```
+## License
+See [LICENSE](LICENSE)
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
-
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default tseslint.config({
-  plugins: {
-    // Add the react-x and react-dom plugins
-    'react-x': reactX,
-    'react-dom': reactDom,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended typescript rules
-    ...reactX.configs['recommended-typescript'].rules,
-    ...reactDom.configs.recommended.rules,
-  },
-})
-```
+## Contributing
+I appreciate and welcome contributions! To contribute:
+- Fork the repo
+- Create a branch on it with your changes
+- Send it over for review
+Please _note_ that any PRs with failed builds will be rejected. This also applies to lint warnings. 
